@@ -107,7 +107,7 @@ def main(args):
         from safetensors.torch import load_file, save_file
         input_sd = load_file(args.input)
     else:
-        from torch import load, save
+        from torch import load, save, device
         import pickle as python_pickle
         class torch_pickle:
             class Unpickler(python_pickle.Unpickler):
@@ -116,7 +116,7 @@ def main(args):
                         return super().find_class(module, name)
                     except:
                         return None
-        input_sd = load(args.input, pickle_module = torch_pickle) # type: ignore
+        input_sd = load(args.input, pickle_module = torch_pickle, map_location=device('cpu')) # type: ignore
     pruned = prune(
             input_sd,
             fp16 = args.fp16,
